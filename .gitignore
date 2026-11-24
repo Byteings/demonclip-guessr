@@ -1,0 +1,4 @@
+node_modules/
+data/demons.json
+*.log
+.DS_Store

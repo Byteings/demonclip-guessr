@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Watch a short clip of an extreme demon and guess the level. Multiplayer pass-and-play and online rooms." />
+  <title>Clip//Guess — Extreme Demon Edition</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" data-screen="multiplayer" aria-label="Clip Guess home">
+      <span class="brand-mark" aria-hidden="true">▶</span>
+      <span class="brand-copy"><strong>CLIP<span class="slash">//</span>GUESS</strong><small>EXTREME DEMON EDITION</small></span>
+    </button>
+    <nav class="nav" aria-label="Main navigation">
+      <button class="nav-btn" data-screen="play">Game</button>
+      <button class="nav-btn active" data-screen="multiplayer">Players</button>
+      <button class="nav-btn" data-screen="collection">Collection <span id="navCollectionCount" class="nav-count">0</span></button>
+      <button class="nav-btn" data-screen="how">How to play</button>
+    </nav>
+    <a class="source-badge" href="https://pointercrate.com/" target="_blank" rel="noopener noreferrer">DATA · POINTERCRATE</a>
+  </header>
+
+  <main class="shell">
+    <!-- ══════════ GAME ══════════ -->
+    <section id="screen-play" class="screen" aria-labelledby="playTitle">
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow" id="roundLabel">ROUND 1</p>
+          <h1 id="playTitle">Name that demon.</h1>
+          <p class="sub" id="playSub">The clip starts on its own. Type the level name when it ends.</p>
+        </div>
+        <div class="hud" aria-label="Current player statistics">
+          <div class="hud-item"><span>SCORE</span><strong id="scoreValue">0</strong></div>
+          <div class="hud-item"><span>STREAK</span><strong id="streakValue">0×</strong></div>
+          <div class="hud-item"><span>ACCURACY</span><strong id="accuracyValue">—</strong></div>
+        </div>
+      </div>
+
+      <div class="play-grid">
+        <div class="stage-column">
+          <div class="stage" id="stage" title="Click the clip to replay it">
+            <div id="playerHost" class="player-host" aria-hidden="true"></div>
+          </div>
+          <div class="clip-strip">
+            <div id="clipProgress" class="clip-progress" hidden>
+              <div class="clip-progress-meta"><span class="record-dot" aria-hidden="true"></span><span id="clipTimer">0:15</span><span class="clip-progress-label">CLIP</span></div>
+              <div class="clip-progress-track"><div id="clipProgressBar" class="clip-progress-bar"></div></div>
+            </div>
+            <div id="hintPanel" class="hint-panel" hidden>
+              <div class="hint-head"><span id="hintNumber">FIRST HINT</span><span id="nextHint">0:30</span></div>
+              <p id="hintText"></p>
+            </div>
+          </div>
+
+          <div class="guess-bar">
+            <div class="guess-head"><span id="stageStatus" class="stage-status">Waiting for players</span><span id="roundMeta" class="round-meta">RANDOM CLIP</span></div>
+            <form id="guessForm" class="guess-form" autocomplete="off">
+              <input id="guessInput" type="text" placeholder="Your guess — level name" aria-label="Level name guess" disabled />
+              <button id="submitGuessBtn" class="btn btn-primary" type="submit" disabled>Guess</button>
+            </form>
+            <p class="quiet">Click the clip or press <span class="kbd">R</span> to replay · <span class="kbd">Enter</span> to submit</p>
+          </div>
+
+          <div id="feedback" class="feedback" aria-live="polite" hidden>
+            <div id="feedbackHead" class="feedback-head"></div>
+            <div id="answerCard" class="answer-card"></div>
+            <div id="onlineResults" class="results-table" hidden></div>
+          </div>
+        </div>
+
+        <aside class="side-column">
+          <div class="panel">
+            <div class="panel-head"><h2>Players</h2><span id="playerMeta" class="panel-hint">2 players</span></div>
+            <div id="playersList" class="players-list"></div>
+            <div id="roomStatus" class="room-status" hidden></div>
+            <div class="side-actions">
+              <button id="addLocalPlayerBtn" class="link-btn" type="button">+ Add player</button>
+              <button id="newGameBtn" class="link-btn muted-link" type="button">New game</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Progress</h2><span id="sessionMeta" class="panel-hint">0%</span></div>
+            <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+            <p class="progress-copy"><strong id="foundCount">0</strong> of <strong id="totalCount">0</strong> identified</p>
+            <button id="viewCollectionBtn" class="link-btn" type="button">View collection →</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ══════════ COLLECTION ══════════ -->
+    <section id="screen-collection" class="screen" aria-labelledby="collectionTitle">
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow">IDENTIFIED LEVELS</p>
+          <h1 id="collectionTitle">Collection.</h1>
+          <p class="sub">Names unlock when you identify them. Nothing here gives away an unidentified level.</p>
+        </div>
+        <div class="hud">
+          <div class="hud-item"><span>FOUND</span><strong id="collectionFound">0</strong></div>
+          <div class="hud-item"><span>TOTAL</span><strong id="collectionTotal">0</strong></div>
+        </div>
+      </div>
+      <div class="collection-toolbar">
+        <div class="input-wrap search-wrap"><span class="input-icon" aria-hidden="true">⌕</span><input id="collectionSearch" type="search" placeholder="Search identified names" aria-label="Search collection" /></div>
+        <div class="chip-row" role="group" aria-label="Filter collection">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="found">Identified</button>
+          <button class="chip" data-filter="missing">Missing</button>
+        </div>
+        <span id="collectionResultCount" class="result-count"></span>
+      </div>
+      <div id="collectionGrid" class="collection-grid"></div>
+      <div id="collectionEmpty" class="empty-state" hidden>No levels match that filter.</div>
+    </section>
+
+    <!-- ══════════ MULTIPLAYER SETUP ══════════ -->
+    <section id="screen-multiplayer" class="screen active" aria-labelledby="multiTitle">
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow">MULTIPLAYER</p>
+          <h1 id="multiTitle">Play together.</h1>
+          <p class="sub">Add up to six players, use any names you like, then pass the device around.</p>
+        </div>
+      </div>
+
+      <div class="mp-tabs" role="group" aria-label="Multiplayer mode">
+        <button class="mp-tab active" data-mptab="local">Pass &amp; play</button>
+        <button class="mp-tab" data-mptab="online">Online rooms</button>
+      </div>
+
+      <div id="mp-local" class="mp-panel">
+        <div class="panel-head"><h2>Players</h2><span class="panel-hint">2–6 players, one device</span></div>
+        <div id="localPlayerInputs" class="local-players"></div>
+        <button id="addLocalPlayerBtnSetup" class="link-btn" type="button">+ Add player</button>
+        <div class="mp-actions"><button id="startLocalBtn" class="btn btn-primary" type="button">Start game</button></div>
+        <p class="muted">Turns rotate after every reveal. Scores and streaks are tracked per player; the collection is shared on this device.</p>
+      </div>
+
+      <div id="mp-online" class="mp-panel" hidden>
+        <p id="inviteNotice" class="invite-notice" hidden></p>
+        <div class="mp-setup">
+          <div class="setup-card">
+            <h3>Create a room</h3>
+            <label class="field"><span>YOUR NAME</span><input id="createName" type="text" maxlength="24" placeholder="Your name" /></label>
+            <button id="createRoomBtn" class="btn btn-primary" type="button">Create room</button>
+          </div>
+          <div class="setup-card">
+            <h3>Join a room</h3>
+            <label class="field"><span>YOUR NAME</span><input id="joinName" type="text" maxlength="24" placeholder="Your name" /></label>
+            <label class="field"><span>ROOM CODE</span><input id="joinCode" type="text" maxlength="5" placeholder="ABCDE" /></label>
+            <button id="joinRoomBtn" class="btn btn-secondary" type="button">Join room</button>
+          </div>
+        </div>
+        <div id="roomInfo" class="room-info" hidden>
+          <div class="room-head">
+            <div><span class="panel-hint">ROOM CODE</span><strong id="roomCode" class="room-code">-----</strong></div>
+            <button id="leaveRoomBtn" class="btn btn-danger" type="button">Leave room</button>
+          </div>
+          <div class="invite-row">
+            <label class="field"><span>INVITE LINK</span><input id="inviteLink" type="text" readonly aria-label="Invite link" /></label>
+            <button id="copyInviteBtn" class="btn btn-secondary" type="button">Copy link</button>
+          </div>
+          <p id="roomNotice" class="room-notice">Waiting for players…</p>
+          <p class="muted">Share the invite link. Friends open it, add their name and join. The first round starts once two players are in.</p>
+        </div>
+        <p id="mpError" class="error-text" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- ══════════ HOW TO PLAY ══════════ -->
+    <section id="screen-how" class="screen" aria-labelledby="howTitle">
+      <div class="screen-heading"><div><p class="eyebrow">RULES</p><h1 id="howTitle">How it works.</h1></div></div>
+      <div class="how-grid">
+        <article class="info-card"><span class="info-num">01</span><h3>Watch a random clip</h3><p>A random level and a random 10–30 second slice of its verification video start automatically. Click the clip or press R to replay it as often as you want.</p></article>
+        <article class="info-card"><span class="info-num">02</span><h3>Guess under the clip</h3><p>When the clip ends, type the level name and press Enter. There are no video links, thumbnails or name lists.</p></article>
+        <article class="info-card"><span class="info-num">03</span><h3>One hint every 30 seconds</h3><p>No hint is shown at the start. Hints arrive automatically; guessing earlier scores more.</p></article>
+        <article class="info-card"><span class="info-num">04</span><h3>Multiplayer</h3><p>Pass &amp; play supports up to six custom-named players on one device. Online rooms let everyone join from an invite link in their own browser.</p></article>
+      </div>
+      <div class="how-bottom">
+        <article class="info-card wide">
+          <h3>Data</h3>
+          <p>Level names, ranks, requirements, creators and verification video IDs come from the <a href="https://pointercrate.com/documentation/demons/" target="_blank" rel="noopener noreferrer">Pointercrate API</a>. Snapshot: <strong id="syncDate">—</strong> (<span id="syncCount">0</span> listed, <span id="syncPlayable">0</span> playable).</p>
+          <div class="sync-row"><button id="syncBtn" class="btn btn-secondary" type="button">Refresh data</button><span id="syncStatus" class="sync-status" aria-live="polite"></span></div>
+        </article>
+        <article class="info-card wide">
+          <h3>Scoring &amp; controls</h3>
+          <ul class="score-list">
+            <li><strong>+100</strong> base points, multiplied up to 2× for top-ranked levels.</li>
+            <li><strong>+speed bonus</strong> up to 50 points, declining after the clip ends.</li>
+            <li><strong>+streak bonus</strong> of 10 per correct answer, capped at 100.</li>
+            <li><strong>−20</strong> for a wrong answer. Skips score zero and break the streak.</li>
+          </ul>
+          <p class="muted">Clips autoplay silently; click the clip to replay with sound. <span class="kbd">R</span> replay · <span class="kbd">Enter</span> submit</p>
+          <button id="resetBtn" class="btn btn-danger" type="button">Reset progress</button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>CLIP//GUESS — fan-made trainer, not affiliated with Pointercrate or RobTop.</span>
+    <a href="https://pointercrate.com/" target="_blank" rel="noopener noreferrer">pointercrate.com ↗</a>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
