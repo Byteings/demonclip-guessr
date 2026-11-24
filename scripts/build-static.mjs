@@ -17,6 +17,12 @@ const pairs = [
   ["js/core.js", "docs/js/core.js"],
   ["js/player.js", "docs/js/player.js"],
   ["data/demons.json", "docs/data/demons.json"],
+  ["favicon.ico", "docs/favicon.ico"],
+  ["icons/favicon-32.png", "docs/icons/favicon-32.png"],
+  ["icons/favicon-64.png", "docs/icons/favicon-64.png"],
+  ["icons/favicon-128.png", "docs/icons/favicon-128.png"],
+  ["icons/apple-touch-icon.png", "docs/icons/apple-touch-icon.png"],
+  ["icons/icon-192.png", "docs/icons/icon-192.png"],
 ];
 
 for (const [from, to] of pairs) {

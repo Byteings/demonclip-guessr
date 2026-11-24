@@ -14,12 +14,14 @@ const MIME = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".png": "image/png",
 };
 
 // Only public client files are reachable. The demon database, sync script and
 // server code must never be served, otherwise players can map a video ID to a
 // level name without watching the clip.
-const PUBLIC_FILES = new Set(["/index.html", "/styles.css", "/app.js"]);
+const PUBLIC_FILES = new Set(["/index.html", "/styles.css", "/app.js", "/favicon.ico"]);
 
 function sendJson(response, status, body) {
   const payload = JSON.stringify(body);
@@ -50,7 +52,9 @@ async function readBody(request) {
 async function serveStatic(pathname, response) {
   let path = decodeURIComponent(pathname);
   if (path === "/" || path.endsWith("/")) path += "index.html";
-  const isPublic = PUBLIC_FILES.has(path) || /^\/js\/[a-z-]+\.js$/.test(path);
+  const isPublic = PUBLIC_FILES.has(path)
+    || /^\/js\/[a-z-]+\.js$/.test(path)
+    || /^\/icons\/[a-z0-9-]+\.png$/.test(path);
   if (!isPublic) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Not found");
     return;
