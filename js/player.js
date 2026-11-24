@@ -33,6 +33,7 @@ export class ClipPlayer {
     this.player = null;
     this.timer = null;
     this.blockTimer = null;
+    this.stallTimer = null;
     this.start = 0;
     this.length = 15;
     this.duration = 0;
@@ -96,6 +97,15 @@ export class ClipPlayer {
     this.player.seekTo(this.start, true);
     this.player.playVideo();
     this.watchAutoplay(YT);
+    // Some videos (private, removed, or YouTube's bot-check) never fire an
+    // error event — they just sit on a message. If playback never starts,
+    // report it as a failure so the game can pick a different clip.
+    clearTimeout(this.stallTimer);
+    this.stallTimer = setTimeout(() => {
+      if (this.player && !this.stopped && !this.running) {
+        this.callbacks.onError?.("Clip did not start — trying another video.");
+      }
+    }, 10_000);
   }
 
   watchAutoplay(YT, attempt = 0) {
@@ -114,6 +124,7 @@ export class ClipPlayer {
 
     if (state === YT.PlayerState.PLAYING && !this.running) {
       clearTimeout(this.blockTimer);
+      clearTimeout(this.stallTimer);
       this.running = true;
       this.callbacks.onPlaying?.();
       this.startTicker();
@@ -203,8 +214,10 @@ export class ClipPlayer {
   destroy() {
     clearInterval(this.timer);
     clearTimeout(this.blockTimer);
+    clearTimeout(this.stallTimer);
     this.timer = null;
     this.blockTimer = null;
+    this.stallTimer = null;
     this.running = false;
     this.stopped = true;
     if (this.player?.destroy) {
