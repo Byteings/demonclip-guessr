@@ -102,6 +102,8 @@ let autoNextTimer = null;
 let joinWaitTimer = null;
 let mqttClient = null;
 let mqttTopic = null;
+let clipFailures = new Set();
+let clipRetries = 0;
 
 const clip = new ClipPlayer({
   host: "playerHost",
@@ -242,6 +244,7 @@ function startRound() {
   state.answer = null;
   state.answerInfo = null;
   state.results = null;
+  clipRetries = 0;
 
   applyState(state);
   if (isHost && mode() === "online") publishState();
@@ -441,8 +444,31 @@ function onClipEnded() {
 
 function onClipError(message) {
   if (!state || state.phase !== "playing") return;
+
+  // A deleted or embed-blocked video would leave a black stage. Swap in a
+  // different level automatically, as long as nobody has guessed yet.
+  if (isHost && clipRetries < 5 && Object.keys(state.submissions ?? {}).length === 0) {
+    const current = byId.get(state.demonId);
+    if (current) clipFailures.add(current.videoId);
+    const candidates = demons.filter((demon) => demon !== current && !clipFailures.has(demon.videoId));
+    if (candidates.length) {
+      clipRetries += 1;
+      const chosen = randomChoice(candidates);
+      state.demonId = chosen.id;
+      state.videoId = chosen.videoId;
+      state.roundStart = Date.now();
+      state.revealAt = state.roundStart;
+      state.hints = [];
+      state.nextHintIn = HINT_INTERVAL_MS;
+      if (mode() === "online") publishState();
+      setStatus("Loading another clip…");
+      beginRound();
+      return;
+    }
+  }
+
   setStatus("Clip unavailable — click the clip to retry");
-  toast(message || "Clip unavailable");
+  if (message) toast(message);
   setGuessEnabled(true);
 }
 
