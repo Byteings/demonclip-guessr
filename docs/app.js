@@ -95,6 +95,7 @@ let myId = randomId();
 let isHost = false;
 let collectionFilter = "all";
 let renderedRound = 0;
+let renderedVideo = null;
 let revealedRound = 0;
 let submittedRound = 0;
 let hintClock = null;
@@ -325,6 +326,7 @@ function applyState(next) {
     clearTimeout(autoNextTimer);
     clip.destroy();
     renderedRound = 0;
+    renderedVideo = null;
     revealedRound = 0;
     setStatus("Starting a random clip…");
     showClipPanels(false);
@@ -333,9 +335,10 @@ function applyState(next) {
     setGuessEnabled(false);
   }
 
-  if (state.phase === "playing" && state.round !== renderedRound) {
+  if (state.phase === "playing" && (state.round !== renderedRound || state.videoId !== renderedVideo)) {
     clearTimeout(autoNextTimer);
     renderedRound = state.round;
+    renderedVideo = state.videoId;
     revealedRound = 0;
     submittedRound = 0;
     showScreen("play");
@@ -465,6 +468,11 @@ function onClipError(message) {
       beginRound();
       return;
     }
+  }
+
+  // If a guest cannot load the video, ask the host to pick another one.
+  if (!isHost && mode() === "online" && mqttTopic) {
+    publish({ type: "videoerror", videoId: state.videoId });
   }
 
   setStatus("Clip unavailable — click the clip to retry");
@@ -787,6 +795,12 @@ function handleMessage(message) {
     applyGuess(message.id, message.guess, message.skip);
     return;
   }
+  if (message.type === "videoerror") {
+    if (state.phase === "playing" && message.videoId === state.videoId) {
+      onClipError("A player could not load this video.");
+    }
+    return;
+  }
   if (message.type === "leave") {
     state.players = state.players.filter((player) => player.id !== message.id);
     renderPlayers();
@@ -841,6 +855,7 @@ function leaveRoom() {
   isHost = false;
   state = null;
   renderedRound = 0;
+  renderedVideo = null;
   revealedRound = 0;
   submittedRound = 0;
   clip.destroy();
