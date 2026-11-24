@@ -15,6 +15,10 @@ node serve.mjs
 
 Open **http://localhost:5173**. No dependencies or build step. The level snapshot is intentionally not committed, so the answer map is never sitting in the repository — run the sync once to fetch it from Pointercrate.
 
+## Playing with friends
+
+One person runs the server. Open it using that machine's LAN address (for example `http://192.168.1.20:5173`) instead of `localhost`, create a room, and copy the invite link — it uses whatever address you opened. Friends on the same Wi-Fi can then join. For friends outside your network, deploy the server anywhere Node runs and share the deployed URL. Rooms live in server memory, so everyone must connect to the **same** server.
+
 ## How it works
 
 - The server keeps the full demon database. The browser only receives a bare YouTube ID for the current clip.
