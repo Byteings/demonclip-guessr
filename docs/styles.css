@@ -1,6 +1,7 @@
 /* Clip//Guess — white, minimal interface */
 
 :root {
+  color-scheme: light;
   --bg: #f7f7f5;
   --surface: #ffffff;
   --line: #e6e6e2;
@@ -172,7 +173,11 @@ h3 { margin: 0 0 8px; font-size: 13px; font-weight: 650; }
 .local-players { display: grid; gap: 8px; margin: 14px 0 10px; }
 .local-row { display: flex; align-items: center; gap: 10px; }
 .local-row span { width: 20px; color: var(--muted); font-size: 11px; }
-.local-row input { flex: 1; }
+.local-row input {
+  flex: 1; min-width: 0; padding: 9px 11px; border: 1px solid var(--line-strong);
+  border-radius: 6px; background: #fff; color: var(--text); outline: none;
+}
+.local-row input:focus { border-color: var(--ink); }
 .mp-actions { margin-top: 18px; }
 .mp-setup { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .setup-card .field { display: block; margin-bottom: 10px; }
