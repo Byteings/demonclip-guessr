@@ -19,6 +19,20 @@ Open **http://localhost:5173**. No dependencies or build step. The level snapsho
 
 One person runs the server. Open it using that machine's LAN address (for example `http://192.168.1.20:5173`) instead of `localhost`, create a room, and copy the invite link — it uses whatever address you opened. Friends on the same Wi-Fi can then join. For friends outside your network, deploy the server anywhere Node runs and share the deployed URL. Rooms live in server memory, so everyone must connect to the **same** server.
 
+## GitHub Pages build (github.io)
+
+The browser-only build lives in [`docs/`](docs/) and is published at **https://byteings.github.io/demonclip-guessr/**. It needs no server: open the URL, create a room and share the invite link. Online rooms are relayed through a public MQTT broker, so anyone with the link can join from anywhere.
+
+Rebuild it after syncing data:
+
+```bash
+node scripts/sync-demons.mjs
+node scripts/build-static.mjs
+git add -A && git commit -m "Update Pages build" && git push
+```
+
+**Trade-off:** GitHub Pages cannot run Node. In this build the level snapshot is downloaded by the browser, so a determined player could inspect the page data to see the answers. The root version keeps the answers server-side and is the one to use if that matters. Rooms are ephemeral and anyone with the code can join.
+
 ## How it works
 
 - The server keeps the full demon database. The browser only receives a bare YouTube ID for the current clip.

@@ -85,7 +85,10 @@ export class ClipPlayer {
     this.length = Math.min(this.length, Math.max(5, this.duration || this.length));
     const min = Math.min(12, Math.max(0, this.duration * 0.1));
     const max = Math.max(min, this.duration - this.length - 2);
-    this.start = this.requestedStart ?? (this.duration > this.length + 4 ? min + Math.random() * (max - min) : 0);
+    const requested = this.requestedStart;
+    this.start = requested == null
+      ? (this.duration > this.length + 4 ? min + Math.random() * (max - min) : 0)
+      : Math.max(0, Math.min(this.duration, requested <= 1 ? requested * this.duration : requested));
     try {
       if (this.muted) this.player.mute?.();
       else this.player.unMute?.();

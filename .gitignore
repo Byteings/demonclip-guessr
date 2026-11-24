@@ -1,4 +1,5 @@
 node_modules/
 data/demons.json
+!docs/data/demons.json
 *.log
 .DS_Store
