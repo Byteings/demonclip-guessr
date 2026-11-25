@@ -85,7 +85,7 @@ export class ClipPlayer {
     if (!this.player || this.stopped) return;
     this.duration = Number(this.player.getDuration()) || 0;
     this.length = Math.min(this.length, Math.max(5, this.duration || this.length));
-    const min = Math.min(12, Math.max(0, this.duration * 0.1));
+    const min = Math.min(this.duration * 0.25, Math.max(0, this.duration * 0.15));
     const max = Math.max(min, this.duration - this.length - 2);
     const requested = this.requestedStart;
     this.start = requested == null

@@ -257,7 +257,7 @@ function startRound() {
   state.round += 1;
   state.phase = "playing";
   state.clipLength = randomChoice(CLIP_LENGTHS);
-  state.start = Math.random() * 0.8 + 0.05;
+  state.start = Math.random() * 0.7 + 0.15;
   state.roundStart = Date.now();
   state.revealAt = state.roundStart;
   state.submissions = {};
