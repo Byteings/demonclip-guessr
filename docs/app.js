@@ -35,6 +35,7 @@ const ui = {
   guessForm: $("guessForm"),
   guessInput: $("guessInput"),
   submit: $("submitGuessBtn"),
+  skip: $("skipGuessBtn"),
   feedback: $("feedback"),
   feedbackHead: $("feedbackHead"),
   answerCard: $("answerCard"),
@@ -133,7 +134,7 @@ function randomChoice(list) {
 // the most popular demons appear more often while still letting every level
 // show up occasionally.
 function demonWeight(demon) {
-  return 1 / Math.max(1, Number(demon?.position) || 1);
+  return 1 / Math.sqrt(Math.max(1, Number(demon?.position) || 1));
 }
 
 function weightedChoice(list) {
@@ -202,6 +203,7 @@ function showClipPanels(show) {
 function setGuessEnabled(enabled) {
   ui.guessInput.disabled = !enabled;
   ui.submit.disabled = !enabled;
+  if (ui.skip) ui.skip.disabled = !enabled;
   if (enabled) ui.guessInput.focus();
 }
 
@@ -908,6 +910,7 @@ function bindEvents() {
     const value = ui.guessInput.value.trim();
     if (value) submitGuess(value, false);
   });
+  if (ui.skip) ui.skip.addEventListener("click", () => submitGuess("", true));
 
   ui.collectionSearch.addEventListener("input", renderCollection);
   ui.chips.forEach((chip) => chip.addEventListener("click", () => {

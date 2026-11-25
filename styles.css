@@ -74,7 +74,7 @@ h3 { margin: 0 0 8px; font-size: 13px; font-weight: 650; }
 .stage { position: relative; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #0c0d10; cursor: pointer; }
 .player-host, .player-host iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 /* Zoom past YouTube's title bar and end screen — only gameplay stays visible. */
-.player-host iframe { pointer-events: none; transform: scale(1.15) translateY(-2%); }
+.player-host iframe { pointer-events: none; transform: scale(1.22) translateY(-4%); }
 .stage:active { cursor: progress; }
 
 .clip-strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 4px; margin-top: 8px; }

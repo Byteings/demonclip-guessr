@@ -32,7 +32,7 @@ function tier(position) {
 // the most popular demons appear more often while still letting every level
 // show up occasionally.
 function demonWeight(demon) {
-  return 1 / Math.max(1, Number(demon?.position) || 1);
+  return 1 / Math.sqrt(Math.max(1, Number(demon?.position) || 1));
 }
 
 function pickWeighted(list) {
