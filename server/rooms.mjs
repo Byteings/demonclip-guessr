@@ -28,6 +28,26 @@ function tier(position) {
   return 1;
 }
 
+// Lower Pointercrate position = more popular. Weighting by inverse rank makes
+// the most popular demons appear more often while still letting every level
+// show up occasionally.
+function demonWeight(demon) {
+  return 1 / Math.max(1, Number(demon?.position) || 1);
+}
+
+function pickWeighted(list) {
+  if (!list || !list.length) return null;
+  const weights = list.map(demonWeight);
+  let total = 0;
+  for (const weight of weights) total += weight;
+  let roll = Math.random() * total;
+  for (let i = 0; i < list.length; i += 1) {
+    roll -= weights[i];
+    if (roll <= 0) return list[i];
+  }
+  return list[list.length - 1];
+}
+
 function makeHints(demon) {
   const letters = [...demon.name].filter((char) => /[a-z]/i.test(char));
   const words = demon.name.trim().split(/\s+/).length;
@@ -301,7 +321,7 @@ export class RoomRegistry {
     const pool = this.eligibleDemons(room, player);
     const candidates = pool.filter((demon) => demon.id !== room.lastDemonId);
     const list = candidates.length ? candidates : pool;
-    const chosen = list[Math.floor(Math.random() * list.length)];
+    const chosen = pickWeighted(list);
 
     room.demon = chosen;
     room.lastDemonId = chosen.id;

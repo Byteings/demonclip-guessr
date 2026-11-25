@@ -129,6 +129,26 @@ function randomChoice(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+// Lower Pointercrate position = more popular. Weighting by inverse rank makes
+// the most popular demons appear more often while still letting every level
+// show up occasionally.
+function demonWeight(demon) {
+  return 1 / Math.max(1, Number(demon?.position) || 1);
+}
+
+function weightedChoice(list) {
+  if (!list || !list.length) return null;
+  const weights = list.map(demonWeight);
+  let total = 0;
+  for (const weight of weights) total += weight;
+  let roll = Math.random() * total;
+  for (let i = 0; i < list.length; i += 1) {
+    roll -= weights[i];
+    if (roll <= 0) return list[i];
+  }
+  return list[list.length - 1];
+}
+
 function makeHints(demon) {
   if (!demon) return [];
   const letters = [...demon.name].filter((char) => /[a-z]/i.test(char));
@@ -228,7 +248,7 @@ function startRound() {
   if (!state || (mode() === "online" && !isHost)) return;
   const previous = byId.get(state.demonId);
   const candidates = demons.filter((demon) => demon !== previous);
-  const chosen = randomChoice(candidates.length ? candidates : demons);
+  const chosen = weightedChoice(candidates.length ? candidates : demons);
 
   state.demonId = chosen.id;
   state.videoId = chosen.videoId;
@@ -456,7 +476,7 @@ function onClipError(message) {
     const candidates = demons.filter((demon) => demon !== current && !clipFailures.has(demon.videoId));
     if (candidates.length) {
       clipRetries += 1;
-      const chosen = randomChoice(candidates);
+      const chosen = weightedChoice(candidates);
       state.demonId = chosen.id;
       state.videoId = chosen.videoId;
       state.roundStart = Date.now();
