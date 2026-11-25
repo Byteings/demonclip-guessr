@@ -65,6 +65,7 @@ export class ClipPlayer {
           fs: 0,
           modestbranding: 1,
           playsinline: 1,
+          autoplay: 1,
           rel: 0,
           iv_load_policy: 3,
           origin: location.protocol === "http:" || location.protocol === "https:" ? location.origin : undefined,

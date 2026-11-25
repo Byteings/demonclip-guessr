@@ -264,6 +264,7 @@ function startHintClock() {
 function onClipPlaying() {
   setStatus("Clip running", true);
   showClipPanels(true);
+  setGuessEnabled(true);
 }
 
 function onClipProgress(elapsed, remaining, ratio) {
